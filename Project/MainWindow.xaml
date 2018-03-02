@@ -1,0 +1,10 @@
+﻿<Window x:Class="SystemWeaver.WordImport.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:localvm="clr-namespace:SystemWeaver.WordImport.ViewModel"
+		xmlns:uc="clr-namespace:Systemite.SystemWeaver.Controls.UserControls;assembly=Systemite.SystemWeaver.Controls"
+        Title="Word import" Height="770" Width="650" WindowStartupLocation="CenterScreen">
+    <uc:ApplicationUserControl Name="appControl" 
+							   ApplicationHeader="Word import"
+							   WelcomeBody="This application lets you import Word documents."/>
+</Window>
