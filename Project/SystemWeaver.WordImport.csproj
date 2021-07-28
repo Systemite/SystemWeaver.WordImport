@@ -57,9 +57,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Imported\Systemite.SystemWeaver.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="SystemWeaverClientAPI, Version=1.49.0.0, Culture=neutral, PublicKeyToken=83bde31f03d42b05, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="SystemWeaverClientAPI, Version=1.52.0.0, Culture=neutral, PublicKeyToken=83bde31f03d42b05, processorArchitecture=MSIL">
       <HintPath>..\Imported\SystemWeaverClientAPI.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
