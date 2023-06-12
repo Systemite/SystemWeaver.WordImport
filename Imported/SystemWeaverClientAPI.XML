@@ -4,28 +4,6 @@
     <name>SystemWeaverClientAPI</name>
   </assembly>
   <members>
-    <member name="T:SystemWeaverAPI.EventSynchronization">
-      <summary>
-            Specifies when events from the server will update the cache and events be sent from the API.
-            </summary>
-      <remarks>
-      </remarks>
-    </member>
-    <member name="F:SystemWeaverAPI.EventSynchronization.None">
-      <summary>
-            No automatic execution of events. They will be processed when you do a call to the API resulting in a server call.
-            </summary>
-    </member>
-    <member name="F:SystemWeaverAPI.EventSynchronization.Dispatcher">
-      <summary>
-            The events will be executed by the Dispatcher associated to the thread on which you do login. 
-            
-            If you for example use the GUI thread of a WPF application the dispatcher will be running and all will be fine.
-            
-            If you use another thread, you need to make sure that the dispatcher associated to that thread is started. 
-            You need to make sure that all calls to the API is then executed by jobs given to this dispatcher. Not from any other thread.
-            </summary>
-    </member>
     <member name="T:SystemWeaverAPI.ConnectionType">
       <summary>
             The connection type to be used when connecting to a SystemWeaver server.
@@ -57,6 +35,14 @@
             server and you need to connect to another server while still connected to the first database you
             can instantiate a new SWConnection with this constructor.
             </summary>
+    </member>
+    <member name="M:SystemWeaverAPI.SWConnection.GetDistinctLicenseInfo(System.Int64)">
+      <summary>
+            Gets an XML string containing connection information for a license on the server.
+            </summary>
+      <remarks>
+            XML schema is subject to change without notice.
+            </remarks>
     </member>
     <member name="M:SystemWeaverAPI.SWConnection.Login">
       <summary>
@@ -170,6 +156,17 @@
     <member name="P:SystemWeaverAPI.SWConnection.ProxyServerPort">
       <summary>
             Gets or sets the port of the proxyserver that the client should log into.
+            </summary>
+    </member>
+    <member name="P:SystemWeaverAPI.SWConnection.UseNetworkAuthentication">
+      <summary>
+            Set to true to login using <see cref="F:SystemWeaver.Common.AuthenticationMethod.NetworkAuthentication" />.<br />
+            Set to false to login using <see cref="F:SystemWeaver.Common.AuthenticationMethod.SystemWeaverCredentials" />.
+            </summary>
+    </member>
+    <member name="P:SystemWeaverAPI.SWConnection.AuthenticationMethod">
+      <summary>
+            Specify which authentication should be used. Default is <see cref="F:SystemWeaver.Common.AuthenticationMethod.SystemWeaverCredentials" />.
             </summary>
     </member>
     <member name="P:SystemWeaverAPI.SWConnection.ServerNetworkId">
@@ -444,6 +441,14 @@
       <param name="AAttributeType">The attribute type.</param>
       <returns>The string as byte array</returns>
     </member>
+    <member name="M:SystemWeaver.Common.SWAttributes.UserHandlesToAttributeData(System.Int64[])">
+      <summary>
+            Converts swHandles to byte array as stored in SystemWeaver attributes.
+            </summary>
+      <param name="handles">array of handles to convert</param>
+      <returns>
+      </returns>
+    </member>
     <member name="T:SystemWeaver.Common.AttributeArray">
       <summary>
             Simple wrapper for array attributes
@@ -559,27 +564,6 @@
     <member name="P:SystemWeaver.Common.SWCreateItemAttributeList.Value">
       <summary>
             Resulting value
-            </summary>
-    </member>
-    <member name="T:SystemWeaver.Common.IswDescription">
-      <summary>
-              Utility class for working with descriptions which contains a reference table and the actual text represented as compressed RVF.
-            </summary>
-    </member>
-    <member name="M:SystemWeaver.Common.IswDescription.HasNilLinks">
-      <summary>
-              Returns if the object reference table contains nil links
-            </summary>
-      <returns>True if nil links exists</returns>
-    </member>
-    <member name="P:SystemWeaver.Common.IswDescription.Data">
-      <summary>
-              The complete raw data representing the description
-            </summary>
-    </member>
-    <member name="P:SystemWeaver.Common.IswDescription.Text">
-      <summary>
-              The text data as compressed RVF.
             </summary>
     </member>
     <member name="T:SystemWeaver.Common.SWPartTypeKind">
@@ -892,6 +876,18 @@
             The item has been checked out by one user and can only be edited by that user.
             </summary>
     </member>
+    <member name="F:SystemWeaver.Common.SWItemStatus.WorkUnchanged">
+      <summary>
+            In new version management, TBD, reserved for an item in status work that has not
+            been changed since last version.
+            </summary>
+    </member>
+    <member name="F:SystemWeaver.Common.SWItemStatus.WorkChanged">
+      <summary>
+            In new version management, TBD, reserved for an item in status work that has
+            been changed since last version.
+            </summary>
+    </member>
     <member name="F:SystemWeaver.Common.SWItemStatus.NoAccess">
       <summary>
             The user does not have read access to the item.
@@ -915,6 +911,27 @@
             </summary>
       <param name="status">This status</param>
       <returns>The color associated with the item status.</returns>
+    </member>
+    <member name="T:SystemWeaver.Common.IswDescription">
+      <summary>
+              Utility class for working with descriptions which contains a reference table and the actual text represented as compressed RVF.
+            </summary>
+    </member>
+    <member name="M:SystemWeaver.Common.IswDescription.HasNilLinks">
+      <summary>
+              Returns if the object reference table contains nil links
+            </summary>
+      <returns>True if nil links exists</returns>
+    </member>
+    <member name="P:SystemWeaver.Common.IswDescription.Data">
+      <summary>
+              The complete raw data representing the description
+            </summary>
+    </member>
+    <member name="P:SystemWeaver.Common.IswDescription.Text">
+      <summary>
+              The text data as compressed RVF.
+            </summary>
     </member>
     <member name="T:SystemWeaver.Common.SWPartType">
       <summary>
@@ -1066,16 +1083,16 @@
       <summary>
             Represents a <see cref="T:SystemWeaver.Common.EnumerationAttributeRange" /></summary>
     </member>
-    <member name="F:SystemWeaver.Common.EnumerationAttributeRange.Name">
+    <member name="P:SystemWeaver.Common.EnumerationAttributeRange.Name">
       <summary>
             The name of the <see cref="T:SystemWeaver.Common.EnumerationAttributeRange" /></summary>
     </member>
-    <member name="F:SystemWeaver.Common.EnumerationAttributeRange.Color">
+    <member name="P:SystemWeaver.Common.EnumerationAttributeRange.Color">
       <summary>
             The color of the <see cref="T:SystemWeaver.Common.EnumerationAttributeRange" />. Color is <c>null</c> if no color was provided in the XML color attribute
             </summary>
     </member>
-    <member name="F:SystemWeaver.Common.EnumerationAttributeRange.Description">
+    <member name="P:SystemWeaver.Common.EnumerationAttributeRange.Description">
       <summary>
             The description of the <see cref="T:SystemWeaver.Common.EnumerationAttributeRange" /></summary>
     </member>
@@ -2422,6 +2439,14 @@
       <returns>Project group with given handle.</returns>
       <exception cref="T:SystemWeaver.Common.SWException">If project group not found</exception>
     </member>
+    <member name="M:SystemWeaver.Common.IswBroker.GetProjectRole(System.Int64)">
+      <summary>
+            [Not cached] Gets the project role with given handle, or exception if project role not found. Returns nil object if nil handle supplied.
+            </summary>
+      <param name="handle">Handle of project role.</param>
+      <returns>Project role with given handle.</returns>
+      <exception cref="T:SystemWeaver.Common.SWException">If project role not found</exception>
+    </member>
     <member name="M:SystemWeaver.Common.IswBroker.FindIssueWithId(System.String)">
       <summary>
             Returns issue with given id, or nil if not found.
@@ -3244,6 +3269,12 @@
       <summary>
             The date and time when the user was created. If the user was created before release R37 the
             creation date was not recorded and this method will return "1899-12-30" which is DateTime.FromOADate(0).
+            </summary>
+    </member>
+    <member name="P:SystemWeaver.Common.IswUser.LastActivationDate">
+      <summary>
+            Last time IsActive was set to true.
+            A newly created user is by default active, at this point this value is SWUtility.NO_DATE.
             </summary>
     </member>
     <member name="P:SystemWeaver.Common.IswUser.IsActive">
@@ -6812,6 +6843,14 @@
       <param name="name">The name of the new group.</param>
       <returns>The new group.</returns>
     </member>
+    <member name="M:SystemWeaver.Common.IswProject.AddRole(System.String,System.String)">
+      <summary>
+            Creates a new project role.
+            </summary>
+      <param name="name">The name of the new role.</param>
+      <param name="sid">The sid of the new role.</param>
+      <returns>The new role.</returns>
+    </member>
     <member name="P:SystemWeaver.Common.IswProject.Iterations">
       <summary>
             Gets all iterations in this project.
@@ -6820,6 +6859,11 @@
     <member name="P:SystemWeaver.Common.IswProject.Groups">
       <summary>
             Gets all groups defined in this project.
+            </summary>
+    </member>
+    <member name="P:SystemWeaver.Common.IswProject.Roles">
+      <summary>
+            Gets all roles defined in this project.
             </summary>
     </member>
     <member name="P:SystemWeaver.Common.IswProject.Description">
@@ -6880,6 +6924,28 @@
             </summary>
       <param name="index">Zero-based index into the list of project group.</param>
       <returns>The project group at the specified index.</returns>
+    </member>
+    <member name="T:SystemWeaver.Common.IswProjectRole">
+      <summary>
+            Interface representing a SystemWeaver project role.
+            </summary>
+    </member>
+    <member name="P:SystemWeaver.Common.IswProjectRole.Project">
+      <summary>
+            Gets which project the project role belongs to.
+            </summary>
+    </member>
+    <member name="T:SystemWeaver.Common.IswProjectRoles">
+      <summary>
+            List of project-roles.
+            </summary>
+    </member>
+    <member name="P:SystemWeaver.Common.IswProjectRoles.Item(System.Int32)">
+      <summary>
+              Retrieves the project role at the given index.
+            </summary>
+      <param name="index">Zero-based index into the list of project role.</param>
+      <returns>The project role at the specified index.</returns>
     </member>
     <member name="T:SystemWeaver.Common.IswIteration">
       <summary>
@@ -7502,6 +7568,13 @@
       <param name="isSortedOnHandle">true if objects in the list should be sorted by handle</param>
       <returns>Empty list</returns>
     </member>
+    <member name="M:SystemWeaver.Common.IswLists.NewProjectRoleList(System.Boolean)">
+      <summary>
+            Creates an empty IswProjectRoles object.
+            </summary>
+      <param name="isSortedOnHandle">true if objects in the list should be sorted by handle</param>
+      <returns>Empty list</returns>
+    </member>
     <member name="M:SystemWeaver.Common.IswLists.NewProjectList(System.Boolean)">
       <summary>
             Creates an empty IswProjects object.
@@ -7894,6 +7967,28 @@
     <member name="P:SystemWeaver.Common.TswGroups.Item(System.Int32)">
       <summary>
             Implements <see cref="P:SystemWeaver.Common.IswGroups.Item(System.Int32)" />.
+            </summary>
+    </member>
+    <member name="T:SystemWeaver.Common.TswRoles">
+      <summary>
+            Class implementing <see cref="T:SystemWeaver.Common.IswRoles" /></summary>
+    </member>
+    <member name="M:SystemWeaver.Common.TswRoles.#ctor(System.Boolean)">
+      <summary>
+            Creates an instance of an IswRoles list.
+            </summary>
+      <param name="isSortedOnHandle">Specify true to have the list always be sorted on object handle.</param>
+    </member>
+    <member name="M:SystemWeaver.Common.TswRoles.#ctor(System.Collections.Generic.IEnumerable{SystemWeaver.Common.IswRole},System.Boolean)">
+      <summary>
+            Creates an instance of an IswRoles list as a copy of a C# enumerable.
+            </summary>
+      <param name="roles">The C# enumerable</param>
+      <param name="isSortedOnHandle">Specify true to have the list always be sorted on object handle.</param>
+    </member>
+    <member name="P:SystemWeaver.Common.TswRoles.Item(System.Int32)">
+      <summary>
+            Implements <see cref="P:SystemWeaver.Common.IswRoles.Item(System.Int32)" />.
             </summary>
     </member>
     <member name="T:SystemWeaver.Common.TswGroupMembers">
@@ -8586,6 +8681,28 @@
             Implements <see cref="P:SystemWeaver.Common.IswProjectGroups.Item(System.Int32)" />.
             </summary>
     </member>
+    <member name="T:SystemWeaver.Common.TswProjectRoles">
+      <summary>
+            Class implementing <see cref="T:SystemWeaver.Common.IswProjectRoles" /></summary>
+    </member>
+    <member name="M:SystemWeaver.Common.TswProjectRoles.#ctor(System.Boolean)">
+      <summary>
+            Creates an instance of an IswProjectRoles list.
+            </summary>
+      <param name="isSortedOnHandle">Specify true to have the list always be sorted on object handle.</param>
+    </member>
+    <member name="M:SystemWeaver.Common.TswProjectRoles.#ctor(System.Collections.Generic.IEnumerable{SystemWeaver.Common.IswProjectRole},System.Boolean)">
+      <summary>
+            Creates an instance of an IswProjectRoles list as a copy of a C# enumerable.
+            </summary>
+      <param name="projectRoles">The C# enumerable</param>
+      <param name="isSortedOnHandle">Specify true to have the list always be sorted on object handle.</param>
+    </member>
+    <member name="P:SystemWeaver.Common.TswProjectRoles.Item(System.Int32)">
+      <summary>
+            Implements <see cref="P:SystemWeaver.Common.IswProjectRoles.Item(System.Int32)" />.
+            </summary>
+    </member>
     <member name="T:SystemWeaver.Common.TswIterations">
       <summary>
             Class implementing <see cref="T:SystemWeaver.Common.IswIterations" /></summary>
@@ -8910,6 +9027,13 @@
       <param name="AZText">The description text as compressed rvf.</param>
       <returns>The description object</returns>
     </member>
+    <member name="M:SystemWeaver.Common.SWDescription.PlainTextToDescription(System.String)">
+      <summary>
+            Creates a SystemWeaver description object from plain text.
+            </summary>
+      <param name="plainText">The description text</param>
+      <returns>The description object</returns>
+    </member>
     <member name="M:SystemWeaver.Common.SWDescription.DescriptionToPlainText(SystemWeaver.Common.IswDescription,SystemWeaver.Common.IswBroker)">
       <summary>
             Creates plain text from a SystemWeaver description object.
@@ -8925,6 +9049,13 @@
       <param name="description">The description object</param>
       <param name="broker">A broker object used to look up description references in the description</param>
       <returns>The description text</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.SWDescription.RtfToDescription(System.String)">
+      <summary>
+            Creates a SystemWeaver description object from rtf.
+            </summary>
+      <param name="rtf">The description text</param>
+      <returns>The description object</returns>
     </member>
     <member name="M:SystemWeaver.Common.SWDescription.DescriptionToDocX(SystemWeaver.Common.IswDescription,SystemWeaver.Common.IswBroker)">
       <summary>
@@ -9038,6 +9169,15 @@
       <returns>
       </returns>
     </member>
+    <member name="M:SystemWeaver.Common.SWUtility.PlainTextToRvfz(System.String)">
+      <summary>
+            Returns text in compressed RichView format (used by rvf attributes).
+            </summary>
+      <param name="text">Plain text</param>
+      <exception cref="T:System.ArgumentNullException">If text is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">If the text (in compressed RichView format) exceeds the maximum size.</exception>
+      <returns>Text in compressed RichView format.</returns>
+    </member>
     <member name="M:SystemWeaver.Common.SWUtility.RvfzToPlainText(System.Byte[],SystemWeaver.Common.IswBroker)">
       <summary>
             Returns plain text from compressed RichView data.
@@ -9077,6 +9217,25 @@
       <param name="fileName">Name of .docx file</param>
       <exception cref="T:System.ArgumentNullException">If rvfz is null.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">If the DocX string exceeds the maximum size.</exception>
+    </member>
+    <member name="M:SystemWeaver.Common.SWUtility.RtfToRvfz(System.String)">
+      <summary>
+            Returns a compressed RVF representation of the RTF.
+            </summary>
+      <param name="rtf">RTF string</param>
+      <exception cref="T:System.ArgumentNullException">If rtf is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">If the compressed RVF data exceeds the maximum size.</exception>
+      <returns>Compressed RVF data.</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.SWUtility.HtmlToRvfz(System.String,System.String)">
+      <summary>
+            Returns a compressed RVF representation of the Html.
+            </summary>
+      <param name="fileName">The file name and path to where the html file is located.</param>
+      <param name="defaultFontName">The default font for html text without font information, default is "Times New Roman"</param>
+      <exception cref="T:System.ArgumentNullException">If fileName is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">If the compressed RVF data exceeds the maximum size.</exception>
+      <returns>Compressed RVF data.</returns>
     </member>
     <member name="M:SystemWeaver.Common.SWUtility.GetAllReferencedItems(SystemWeaver.Common.IswItem,System.Boolean,System.Boolean,System.Boolean,System.Collections.Generic.List{System.String})">
       <summary>
