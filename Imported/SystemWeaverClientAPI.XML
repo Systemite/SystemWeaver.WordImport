@@ -1760,6 +1760,16 @@
             [internal, do not use]
             </summary>
     </member>
+    <member name="M:SystemWeaver.Common.IswBroker.PrepareForStructureTree(SystemWeaver.Common.IswItems,SystemWeaver.Common.IswPartTypes)">
+      <summary>
+              Used to read into the cache all items needed for a specific structure tree setting.
+              The logic for exactly which items are considered may change as the needs of the structure tree changes.
+            </summary>
+      <param name="startItems">
+      </param>
+      <param name="partTypes">
+      </param>
+    </member>
     <member name="M:SystemWeaver.Common.IswBroker.GetSystemVariableString(System.String)">
       <summary>Reads a SystemWeaver system variable as a string. If the variable with that name does not exist an empty string is returned.</summary>
       <param name="name">The qualified name of the system variable.</param>
@@ -4591,14 +4601,12 @@
             [Valid for Item, Issues] See <see cref="M:SystemWeaver.Common.IswObj.AddNote(System.String,System.String,SystemWeaver.Common.IswDescription)" />.
             </summary>
     </member>
-    <member name="M:SystemWeaver.Common.IswObj.AddFileByData(System.String,System.Byte[],System.Int32,System.String,SystemWeaver.Common.IswFileRevision)">
+    <member name="M:SystemWeaver.Common.IswObj.AddFileByData(System.String,System.Byte[],SystemWeaver.Common.IswFileRevision)">
       <summary>
-            Attaches a file to the obj, where the file already exists in memory compressed into a byte array.
+            Attaches a file to the obj, where the file already exists in memory as a byte array.
             </summary>
       <param name="fileName">The name of the file.</param>
-      <param name="compressedFile">The file data compressed with zlib.</param>
-      <param name="originalFileSize">The size of the original uncompressed file.</param>
-      <param name="originalFileHash">The hash of the original uncompressed file, see <see cref="P:SystemWeaver.Common.IswFileRevision.Hash" />.</param>
+      <param name="fileData">The file data.</param>
       <param name="prevRevision">Optional parameter indicating that the new file should be considered a new revision of specified previous file.</param>
       <returns>The new SystemWeaver file-revision object representing the file.</returns>
       <remarks>The name of the file-revision will be the supplied fileName including extension, but the path will be removed.</remarks>
@@ -7162,6 +7170,20 @@
     <member name="P:SystemWeaver.Common.IswIssues.Item(System.Int32)">
       <summary>
               Retrieves the issue at the given index.
+            </summary>
+      <param name="index">Zero-based index into the list of issues.</param>
+      <returns>The issue at the specified index.</returns>
+    </member>
+    <member name="P:SystemWeaver.Common.IswRequests.Item(System.Int32)">
+      <summary>
+              Retrieves the request at the given index.
+            </summary>
+      <param name="index">Zero-based index into the list of issues.</param>
+      <returns>The issue at the specified index.</returns>
+    </member>
+    <member name="P:SystemWeaver.Common.IswRequestAcks.Item(System.Int32)">
+      <summary>
+              Retrieves the request at the given index.
             </summary>
       <param name="index">Zero-based index into the list of issues.</param>
       <returns>The issue at the specified index.</returns>
