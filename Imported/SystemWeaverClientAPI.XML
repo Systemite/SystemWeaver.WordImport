@@ -443,7 +443,7 @@
     </member>
     <member name="M:SystemWeaver.Common.SWAttributes.UserHandlesToAttributeData(System.Int64[])">
       <summary>
-            Converts swHandles to byte array as stored in SystemWeaver attributes.
+            Converts swHandles to byte array. This is NOT how users are stored on attributes.
             </summary>
       <param name="handles">array of handles to convert</param>
       <returns>
@@ -1595,12 +1595,12 @@
             The refactorings.
             </summary>
     </member>
-    <member name="M:SystemWeaver.Common.IswRefactorings.ChangePartType(SystemWeaver.Common.IswPartType,SystemWeaver.Common.IswPartType,SystemWeaver.Common.IswItemType,SystemWeaver.Common.IswItemType)">
+    <member name="M:SystemWeaver.Common.IswRefactorings.ChangePartType(SystemWeaver.Common.IswPartType,SystemWeaver.Common.IswPartType,SystemWeaver.Common.IswItemType,SystemWeaver.Common.IswItemType,System.String)">
       <summary>
             [refactoring, do not use] WARNING, does not update client cache.
             </summary>
     </member>
-    <member name="M:SystemWeaver.Common.IswRefactorings.ChangePartMultiplicityToList(SystemWeaver.Common.IswPartType)">
+    <member name="M:SystemWeaver.Common.IswRefactorings.ChangePartMultiplicity(SystemWeaver.Common.IswPartType,SystemWeaver.Common.SWMultiplicity)">
       <summary>
             [refactoring, do not use]
             </summary>
@@ -1623,6 +1623,11 @@
       <param name="oldItemType">The type to convert from,</param>
       <param name="newItemType">The type to convert to.</param>
     </member>
+    <member name="M:SystemWeaver.Common.IswRefactorings.ChangeEnumerationAttributeValue(SystemWeaver.Common.IswAttributeType,System.String,System.String)">
+      <summary>
+            [refactoring, do not use] WARNING, updates client cache, but can be a LOT of updates.
+            </summary>
+    </member>
     <member name="M:SystemWeaver.Common.IswRefactorings.ChangeTypeSID(SystemWeaver.Common.IswType,System.String)">
       <summary>
             [refactoring, do not use] Changes the sid of an obj type.
@@ -1636,6 +1641,19 @@
             </summary>
       <param name="attributeType">The attribute type.</param>
       <param name="newSID">The new SID</param>
+    </member>
+    <member name="M:SystemWeaver.Common.IswRefactorings.ChangeIdentityAttributePrefix(SystemWeaver.Common.IswAttributeType,System.String)">
+      <summary>
+            [refactoring, do not use] Updates the attribute values of given type to new prefix. All values.
+            </summary>
+      <param name="attributeType">The attribute type.</param>
+      <param name="newSID">The new SID</param>
+    </member>
+    <member name="M:SystemWeaver.Common.IswRefactorings.ConvertToNewVersioning">
+      <summary>
+            [refactoring, do not use] DO NOT USE. Will put the database into a state that the client
+            does not yet support.
+            </summary>
     </member>
     <member name="M:SystemWeaver.Common.IswRvfBroker.ServerRvfzToPlainText(System.Byte[],System.Int32,System.Int64[],System.String[])">
       <summary>
@@ -3701,7 +3719,7 @@
       <summary>
             Gets the multiplicity.
             </summary>
-      <remarks>To change the multiplicity of a part-type you have to use <see cref="M:SystemWeaver.Common.IswRefactorings.ChangePartMultiplicityToList(SystemWeaver.Common.IswPartType)" />.</remarks>
+      <remarks>To change the multiplicity of a part-type you have to use <see cref="M:SystemWeaver.Common.IswRefactorings.ChangePartMultiplicity(SystemWeaver.Common.IswPartType,SystemWeaver.Common.SWMultiplicity)" />.</remarks>
     </member>
     <member name="P:SystemWeaver.Common.IswPartType.DefType">
       <summary>
@@ -9056,6 +9074,13 @@
       <param name="plainText">The description text</param>
       <returns>The description object</returns>
     </member>
+    <member name="M:SystemWeaver.Common.SWDescription.IsEmpty(SystemWeaver.Common.IswDescription)">
+      <summary>
+            Checks if the given description is empty.
+            </summary>
+      <param name="description">The description object</param>
+      <returns>True if the description is empty</returns>
+    </member>
     <member name="M:SystemWeaver.Common.SWDescription.DescriptionToPlainText(SystemWeaver.Common.IswDescription,SystemWeaver.Common.IswBroker)">
       <summary>
             Creates plain text from a SystemWeaver description object.
@@ -9199,6 +9224,15 @@
       <exception cref="T:System.ArgumentNullException">If text is null.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">If the text (in compressed RichView format) exceeds the maximum size.</exception>
       <returns>Text in compressed RichView format.</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.SWUtility.RvfzIsEmpty(System.Byte[])">
+      <summary>
+            Checks if the description is empty. Visible rvf item count is empty.
+            </summary>
+      <param name="text">Plain text</param>
+      <exception cref="T:System.ArgumentNullException">If text is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">If the text (in compressed RichView format) exceeds the maximum size.</exception>
+      <returns>True if there is no visible text or images in the description</returns>
     </member>
     <member name="M:SystemWeaver.Common.SWUtility.RvfzToPlainText(System.Byte[],SystemWeaver.Common.IswBroker)">
       <summary>
