@@ -9,7 +9,7 @@ using System.IO;
 using System.Windows;
 using System.Collections.ObjectModel;
 using SystemWeaver.Common;
-using SystemWeaver.Resources;
+using SystemWeaver.Images;
 using SystemWeaverAPI;
 using SystemWeaver.WordImport.Common;
 using SystemWeaver.WordImport.Windows;
