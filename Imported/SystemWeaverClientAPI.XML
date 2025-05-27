@@ -268,6 +268,22 @@
               You only get an event if the workflow has been read in into the cache.
             </summary>
     </member>
+    <member name="M:SystemWeaver.Common.MergeInfo.#ctor(SystemWeaver.Common.IswItem)">
+      <summary>
+            Creates empty merge info
+            </summary>
+      <param name="AMergedFrom">
+      </param>
+    </member>
+    <member name="M:SystemWeaver.Common.MergeInfo.PartConflict(SystemWeaver.Common.IswPart)">
+      <summary>
+            Returns null if no conflict on given part.
+            </summary>
+      <param name="part">
+      </param>
+      <returns>
+      </returns>
+    </member>
     <member name="T:SystemWeaver.Common.SWAccessCodes">
       <summary>
               Represents the possible access codes currently available in SystemWeaver.
@@ -770,6 +786,12 @@
     <member name="F:SystemWeaver.Common.SWItemVersionBranching.ImplicitBranch">
       <summary>
             This item itself is not a direct branch, but there is a previous version somewhere up which is a branch. I.e. the item version is not in trunk.
+            </summary>
+    </member>
+    <member name="T:SystemWeaver.Common.InsertVersionBehavior">
+      <summary>
+            This is part of experimental functionality and should not
+            be used in production code. Yet.
             </summary>
     </member>
     <member name="T:SystemWeaver.Common.SWAttributeDataDimension">
@@ -1665,6 +1687,16 @@
       <param name="nameArray">names for item-links in description</param>
       <returns>plain text</returns>
     </member>
+    <member name="M:SystemWeaver.Common.IswRvfBroker.ServerRvfzToHtmlText(System.Byte[],System.Int32,System.Int64[],System.String[])">
+      <summary>
+            Server call for RvfzToHtmlText(), so .Net Core applications can call RVF-dlls.
+            </summary>
+      <param name="rvfz">rvf data</param>
+      <param name="length">length of data</param>
+      <param name="handles">handles to item-links in description</param>
+      <param name="nameArray">names for item-links in description</param>
+      <returns>Html text</returns>
+    </member>
     <member name="M:SystemWeaver.Common.IswRvfBroker.ServerRvfzToRtf(System.Byte[],System.Int32,System.Int64[],System.String[])">
       <summary>
             Server call for RvfzToRtf(), so .Net Core applications can call RVF-dlls.
@@ -1787,6 +1819,12 @@
       </param>
       <param name="partTypes">
       </param>
+    </member>
+    <member name="M:SystemWeaver.Common.IswBroker.PrepareItems(System.Int64[])">
+      <summary>
+            Loads items with given handles into cache. Items in cache will be ignored.
+            </summary>
+      <param name="itemHandles">array of item-handles.</param>
     </member>
     <member name="M:SystemWeaver.Common.IswBroker.GetSystemVariableString(System.String)">
       <summary>Reads a SystemWeaver system variable as a string. If the variable with that name does not exist an empty string is returned.</summary>
@@ -2551,10 +2589,34 @@
             [Internal, do not use] File vault details.
             </summary>
     </member>
+    <member name="M:SystemWeaver.Common.IswBroker.AddFileByData(System.String,System.Byte[])">
+      <summary>
+            Adds a file to the file repository
+            </summary>
+      <param name="fileName">File name</param>
+      <param name="fileData">The contents of the file as a byte array.</param>
+      <returns>
+      </returns>
+    </member>
     <member name="M:SystemWeaver.Common.IswBroker.GetFileBlock(System.Int64,System.Int32)">
       <summary>
             [Internal, do not use] File vault details.
             </summary>
+    </member>
+    <member name="M:SystemWeaver.Common.IswBroker.GetFileInfo(System.Int64)">
+      <summary>
+                Returns information about a file in the file repository
+            </summary>
+      <param name="fileHandle">File handle</param>
+      <returns>The information</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.IswBroker.GetFileData(System.Int64)">
+      <summary>
+            Returns the data contained in a file repository file. Does only work for files with a a size less than 2Gb, due to C# limit on array indexer.
+            But in  general, only use this for smaller files.
+            </summary>
+      <param name="fileHandle">The file handle</param>
+      <returns>The complete data in the file as a byte array</returns>
     </member>
     <member name="M:SystemWeaver.Common.IswBroker.GetFileRevision(System.Int64)">
       <summary>
@@ -3434,6 +3496,12 @@
             If the specified user does not have role, then the method will silently return, as if successful.
             </remarks>
     </member>
+    <member name="M:SystemWeaver.Common.IswRole.HasUser(SystemWeaver.Common.IswUser)">
+      <summary>
+              Returns true if the role has given user. Use this instead
+              of Users.Contains for performance.
+            </summary>
+    </member>
     <member name="P:SystemWeaver.Common.IswRole.Users">
       <summary>
             Returns all users with given role. 
@@ -3805,6 +3873,14 @@
       <param name="value">The attribute-value in its raw binary form.</param>
       <returns>True if the value correctly represents a correct value of this attribute-type.</returns>
     </member>
+    <member name="M:SystemWeaver.Common.IswAttributeType.ValueIsValid(System.Byte[],System.String@)">
+      <summary>
+              Same as ValueIsValid(byte[], but returns more information as to what is wrong.
+            </summary>
+      <param name="value">The attribute value</param>
+      <param name="details">The extra information about why the value is not valid</param>
+      <returns>True if the value correctly represents a correct value of this attribute-type.</returns>
+    </member>
     <member name="M:SystemWeaver.Common.IswAttributeType.GetColor(System.String)">
       <summary>
               For enumeration attributes this returns the color of an attribute-value.
@@ -3822,6 +3898,13 @@
             </summary>
       <returns>
       </returns>
+    </member>
+    <member name="M:SystemWeaver.Common.IswAttributeType.SetDataDimension(SystemWeaver.Common.SWAttributeDataDimension)">
+      <summary>
+            This is considered a refactoring. Don't use this unless really necessary.
+            !!! Can irreversibly change  data !!!
+            </summary>
+      <param name="value">Requested new data dimension</param>
     </member>
     <member name="P:SystemWeaver.Common.IswAttributeType.SID">
       <summary>
@@ -5203,6 +5286,13 @@
             Returns all parts on this item.
             </summary>
       <returns>All parts on this item.</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.IswItem.GetAllDependencies">
+      <summary>
+            Returns all item handles of all defobj and refobj in all parts of this item.
+            Only item handles, if the part references parts or nodes, those are not included.
+            </summary>
+      <returns>List of item handles</returns>
     </member>
     <member name="M:SystemWeaver.Common.IswItem.GetPartItems(System.String)">
       <summary>
@@ -9089,6 +9179,14 @@
       <param name="broker">A broker object used to look up description references in the description</param>
       <returns>The description text</returns>
     </member>
+    <member name="M:SystemWeaver.Common.SWDescription.DescriptionToHtmlText(SystemWeaver.Common.IswDescription,SystemWeaver.Common.IswBroker)">
+      <summary>
+            (BETA VERSION, not complete functionality) Returns html text from a SystemWeaver description object. 
+            </summary>
+      <param name="description">The description object</param>
+      <param name="broker">A broker object used to look up description references in the description</param>
+      <returns>The description text</returns>
+    </member>
     <member name="M:SystemWeaver.Common.SWDescription.DescriptionToRtf(SystemWeaver.Common.IswDescription,SystemWeaver.Common.IswBroker)">
       <summary>
             Creates rtf from a SystemWeaver description object.
@@ -9216,6 +9314,18 @@
       <returns>
       </returns>
     </member>
+    <member name="M:SystemWeaver.Common.SWUtility.StrToDouble(System.String)">
+      <summary>
+            Converts a string to double using decimal point.
+            This is the standard used in SystemWeaver.
+            </summary>
+    </member>
+    <member name="M:SystemWeaver.Common.SWUtility.TryStrToDouble(System.String,System.Double@)">
+      <summary>
+            Tries to converts a string to double using decimal point.
+            This is the standard used in SystemWeaver.
+            </summary>
+    </member>
     <member name="M:SystemWeaver.Common.SWUtility.PlainTextToRvfz(System.String)">
       <summary>
             Returns text in compressed RichView format (used by rvf attributes).
@@ -9234,7 +9344,7 @@
       <exception cref="T:System.ArgumentOutOfRangeException">If the text (in compressed RichView format) exceeds the maximum size.</exception>
       <returns>True if there is no visible text or images in the description</returns>
     </member>
-    <member name="M:SystemWeaver.Common.SWUtility.RvfzToPlainText(System.Byte[],SystemWeaver.Common.IswBroker)">
+    <member name="M:SystemWeaver.Common.SWUtility.RvfzToPlainTextDll(System.Byte[],SystemWeaver.Common.IswBroker)">
       <summary>
             Returns plain text from compressed RichView data.
             </summary>
@@ -9243,6 +9353,16 @@
       <exception cref="T:System.ArgumentNullException">If rvfz is null.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">If the plain text string exceeds the maximum size.</exception>
       <returns>Plain text</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.SWUtility.RvfzToHtmlTextDll(System.Byte[],SystemWeaver.Common.IswBroker)">
+      <summary>
+            Returns html text from compressed RichView data.
+            </summary>
+      <param name="rvfz">Compressed RichView data</param>
+      <param name="broker">A broker in which to look up object names for description references</param>
+      <exception cref="T:System.ArgumentNullException">If rvfz is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">If the html text string exceeds the maximum size.</exception>
+      <returns>Html text</returns>
     </member>
     <member name="M:SystemWeaver.Common.SWUtility.RvfzToRtf(System.Byte[],SystemWeaver.Common.IswBroker)">
       <summary>
