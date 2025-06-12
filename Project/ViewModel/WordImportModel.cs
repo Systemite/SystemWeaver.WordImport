@@ -1,22 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Media;
-using System.Windows.Input;
-using System.IO;
 using System.Windows;
-using System.Collections.ObjectModel;
 using SystemWeaver.Common;
 using SystemWeaver.Images;
-using SystemWeaverAPI;
 using SystemWeaver.WordImport.Common;
-using SystemWeaver.WordImport.Windows;
 using SystemWeaver.WordImport.Controls;
-using Systemite.SystemWeaver.Controls.WTreeViews;
-using Systemite.SystemWeaver.Controls.ViewModels;
-using System.Windows.Controls;
+using SystemWeaver.WordImport.Windows;
+using SystemWeaverAPI;
 
 namespace SystemWeaver.WordImport.ViewModel
 {
@@ -51,12 +45,21 @@ namespace SystemWeaver.WordImport.ViewModel
             }
         }
 
-        private RelayCommand _moveDownCommand;
-        public RelayCommand MoveDownCommand
+        private RelayCommand _moveToDescriptionCommand;
+        public RelayCommand MoveToDescriptionCommand
         {
             get
             {
-                return GetCommand(ref _moveDownCommand, o => MoveDown());
+                return GetCommand(ref _moveToDescriptionCommand, o => MoveToDescription());
+            }
+        }
+
+        private RelayCommand _moveToSectionCommand;
+        public RelayCommand MoveToSectionCommand
+        {
+            get
+            {
+                return GetCommand(ref _moveToSectionCommand, o => MoveToSection());
             }
         }
 
@@ -130,6 +133,40 @@ namespace SystemWeaver.WordImport.ViewModel
             }
         }
 
+        //Displays information modal
+        private RelayCommand _infoBtnClick;
+        public RelayCommand InfoBtnClick => GetCommand(ref _infoBtnClick, o => ReadInfoFromFile("info.txt", "Word import info"));
+
+        private void ReadInfoFromFile(string fileName, string title)
+        {
+            // Get the root directory where the executable is located
+            string rootPath = AppDomain.CurrentDomain.BaseDirectory;
+
+            // Combine the root path and the file name to get the full path to the file
+            string filePath = Path.Combine(rootPath, fileName);
+
+            // Check if the file exists in the root directory
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    // Read the entire contents of the file
+                    string fileContent = File.ReadAllText(filePath);
+                    // Show a message box with the desired information
+                    MessageBox.Show(fileContent, title, MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    // Handle any exceptions (e.g., file could not be read)
+                }
+            }
+            else
+            {
+                // If the file does not exist, notify the user
+                Console.WriteLine($"File not found at {filePath}");
+            }
+        }
+
         private ObservableCollection<SwStyle> _swStyles;
         public ObservableCollection<SwStyle> SwStyles
         {
@@ -141,6 +178,20 @@ namespace SystemWeaver.WordImport.ViewModel
             }
         }
 
+        private SwStyle _selectedSwStyle;
+        public SwStyle SelectedSwStyle
+        {
+            get { return _selectedSwStyle; }
+            set
+            {
+                if (_selectedSwStyle != value)
+                {
+                    _selectedSwStyle = value;
+                    OnPropertyChanged(nameof(SelectedSwStyle));
+                }
+            }
+        }
+
         private ObservableCollection<SwStyle> _descriptionStyles;
         public ObservableCollection<SwStyle> DescriptionStyles
         {
@@ -149,6 +200,20 @@ namespace SystemWeaver.WordImport.ViewModel
             {
                 _descriptionStyles = value;
                 OnPropertyChanged("DescriptionStyles");
+            }
+        }
+
+        private SwStyle _selectedDescriptionStyles;
+        public SwStyle SelectedDescriptionStyles
+        {
+            get { return _selectedDescriptionStyles; }
+            set
+            {
+                if (_selectedDescriptionStyles != value)
+                {
+                    _selectedDescriptionStyles = value;
+                    OnPropertyChanged(nameof(SelectedDescriptionStyles));
+                }
             }
         }
 
@@ -167,13 +232,22 @@ namespace SystemWeaver.WordImport.ViewModel
             }
         }
 
-        private void MoveDown()
+        private void MoveToDescription()
         {
-            if (SwStyles.Count == 0)
-                return;
-            var last = SwStyles.Last();
-            SwStyles.Remove(last);
-            DescriptionStyles.Insert(0, last);
+            if (SelectedSwStyle != null)
+            {
+                DescriptionStyles.Insert(0, SelectedSwStyle);
+                SwStyles.Remove(SelectedSwStyle);
+            }
+        }
+
+        private void MoveToSection()
+        {
+            if (SelectedDescriptionStyles != null)
+            {
+                SwStyles.Insert(0, SelectedDescriptionStyles);
+                DescriptionStyles.Remove(SelectedDescriptionStyles);
+            }
         }
 
         private void ImportWordDocument()
@@ -212,7 +286,7 @@ namespace SystemWeaver.WordImport.ViewModel
                 throw;
             }
         }
-   
+
         private void ValidateParagraphs(List<SwParagraph> paragraphs, List<SwStyle> descriptionList)
         {
             long totalLength = 0;
@@ -223,7 +297,7 @@ namespace SystemWeaver.WordImport.ViewModel
             {
                 if (!descriptionList.Select(x => x.Name).ToList().Contains(p.Style.Name))
                 {
-                    if(p.RtfData != null)
+                    if (p.RtfData != null)
                         totalLength += p.RtfData.Length;
                     nrParagraphs++;
                     long avgLength = totalLength / nrParagraphs;
@@ -293,7 +367,7 @@ namespace SystemWeaver.WordImport.ViewModel
             int pos = XidText.LastIndexOf('/');
             if (pos >= 0)
                 handleStr = XidText.Substring(pos + 1);
-            if(SWHandleUtility.TryParseHandle(handleStr, out handle))
+            if (SWHandleUtility.TryParseHandle(handleStr, out handle))
                 CurrentItem = SystemWeaverAPI.SWConnection.Instance.Broker.GetItem(handle);
         }
 

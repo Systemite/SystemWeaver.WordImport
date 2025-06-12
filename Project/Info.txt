@@ -1,0 +1,9 @@
+﻿Word import procedure:
+
+1. Container ID: Provide the id of the empty SystemWeaver document(SSRP) where you wish to import.
+
+2. Word import: Select the Word file containing the data to be imported.
+
+3. [Optional] Move headings to description (do not create a SystemWeaver item).
+
+4. Start the import.

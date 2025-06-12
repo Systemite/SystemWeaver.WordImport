@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Icon" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 24 24">
+  <!-- Generator: Adobe Illustrator 29.5.1, SVG Export Plug-In . SVG Version: 2.1.0 Build 141)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #ff734b;
+      }
+
+      .st1 {
+        stroke: #ff734b;
+        stroke-linecap: round;
+      }
+
+      .st1, .st2 {
+        fill: none;
+        stroke-miterlimit: 10;
+      }
+
+      .st2 {
+        stroke: #5546ff;
+      }
+    </style>
+  </defs>
+  <circle class="st2" cx="12" cy="12" r="9.5"/>
+  <line class="st1" x1="12" y1="9.5" x2="12" y2="17.5"/>
+  <circle class="st0" cx="12" cy="6.5" r=".5"/>
+</svg>

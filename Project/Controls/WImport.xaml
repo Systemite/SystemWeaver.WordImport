@@ -3,9 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
              xmlns:localvm="clr-namespace:SystemWeaver.WordImport.ViewModel"
              mc:Ignorable="d" 
-             d:DesignHeight="700" d:DesignWidth="600">
+             d:DesignHeight="750" d:DesignWidth="1200" d:Background="#F7F7F7">
     <UserControl.Resources>
         <ResourceDictionary>
             <BooleanToVisibilityConverter x:Key="BoolToVisConverter" />
@@ -14,79 +15,85 @@
     <UserControl.DataContext>
         <localvm:WordImportModel />
     </UserControl.DataContext>
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="324" />
-                <ColumnDefinition Width="54" />
-                <ColumnDefinition Width="Auto" MinWidth="66" />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Width="50" HorizontalAlignment="Left" Margin="10,5,0,5">Item id</Label>
-            <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Padding="5,5,5,5" Margin="10,5,15,5" 
-                     Text="{Binding XidText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  />
-            <Label Grid.Row="1" HorizontalAlignment="Left" Name="labelFileName" Content="File:" Margin="10,10,0,10" Width="31"  />
-            <TextBox Grid.Row="1" Grid.Column="1" Padding="5,5,5,5" Margin="10,10,1,10"  Name="textBoxFileName" 
-                         Text="{Binding FileNameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  />
-            <Button Grid.Row="1" Grid.Column="2" Width="25" Height="25" Command="{Binding SelectWordFileCommand}" >...</Button>
-        </Grid>
-        <TextBlock Grid.Row="0" Margin="10"><Bold>Word import example</Bold><LineBreak />1. Copy and paste the id of an empty SystemWeaver Document (SSRP). <LineBreak />2. Select the Word document. <LineBreak />3. [Optional] Move headings down into Description (do not create a SystemWeaver item).<LineBreak />4. Import.</TextBlock>
-        <Grid Grid.Column="0" Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="200" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="200" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Height="30" Margin="10">Create as Sections (SSSE)</Label>
-            <ListBox Name="ListBoxSectionStyles" Grid.Row="0" Grid.Column="2" ItemsSource="{Binding SwStyles}" DisplayMemberPath="Name"/>
-            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="0,0,15,0" HorizontalAlignment="Left"/>
 
-            <Label Grid.Row="2" Height="30" Margin="10">Include as Description</Label>
-            <ListBox Name="ListBoxDescriptionsStyles" Grid.Row="2" Grid.Column="1" ItemsSource="{Binding DescriptionStyles}" DisplayMemberPath="Name"/>
-            
-      
-            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                <Button Margin="5" Command="{Binding MoveDownCommand}" >Move heading down</Button>
-                <Label>(do not create a separate section)</Label>
-            </StackPanel>
-        </Grid>
-        <Grid Grid.Row="4">
+    <Border Background="White" CornerRadius="4" Margin="8">
+        <Grid Margin="16">
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-            <TextBox Grid.Row="0" IsReadOnly="True" Foreground="Red" Margin="10,0,0,0"
-                     Visibility="{Binding WarningsVisible, Converter={StaticResource BoolToVisConverter}, UpdateSourceTrigger=PropertyChanged}" 
-                     Text="{Binding ImportWarnings, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-            
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <TextBlock FontSize="20" Text="Import config" FontWeight="SemiBold" Margin="0 0 4 16"/>
+                <Button VerticalAlignment="Center"  Height="auto" Width="auto" Background="Transparent" Padding="0" BorderThickness="0"  Command="{Binding InfoBtnClick}" AutomationProperties.Name="Info Icon">
+                    <Image Width="24" Height="24" Margin="4,0,0,8" Source="{dx:SvgImageSource Uri=../Assets/Icon_Info_24x24.svg}"/>
+                </Button>
+            </StackPanel>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="0,0,0,8"  Padding="0" VerticalAlignment="Center" FontSize="16" >Container ID:</Label>
+                <TextBox  Grid.Row="1" Grid.Column="0"  VerticalAlignment="Top"  Height="24" Width="180" Margin="0 0 16 0" 
+Text="{Binding XidText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,8" Padding="0" VerticalAlignment="Center" FontSize="16">Import Word:</Label>
+                <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+                    <Button Grid.Row="0" Grid.Column="0" Width="auto" Height="auto" Command="{Binding SelectWordFileCommand}"  Background="#5546FF" Foreground="#FFFF" Padding="8,4"  BorderThickness="0" Content="Import file"/>
+                    <TextBox Grid.Row="0" Grid.Column="1"  VerticalAlignment="Top"  Height="24" Width="180" Margin="4 0 0 0" MaxWidth="240"  Name="textBoxFileName" 
+                         Text="{Binding FileNameText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="2" Margin="0 16 0 0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto" />
+                    <RowDefinition Height="300" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Content="Create as section" Margin="0 0 0 4" FontSize="16" />
+                <ListBox Grid.Row="1" Grid.Column="0" Name="ListBoxSectionStyles" ItemsSource="{Binding SwStyles}" DisplayMemberPath="Name"  SelectedItem="{Binding SelectedSwStyle, Mode=TwoWay}"/>
+                <StackPanel Grid.Row="1" Grid.Column="1" VerticalAlignment="Center">
+                    <Button Margin="5" Padding="4" Background="Transparent" Command="{Binding MoveToDescriptionCommand}" Height="auto">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock VerticalAlignment="Center" Text="Move to section" />
+                            <Image  Margin="4,0,0,0" HorizontalAlignment="Center" Source="{dx:SvgImageSource Uri=../Assets/Icon_Arrow_Right_24x24.svg}" Height="auto"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Margin="5" Padding="4" HorizontalAlignment="Center" Background="Transparent" Command="{Binding MoveToSectionCommand}" >
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 0 4 0">
+                            <Image Margin="0,0,4,0" Source="{dx:SvgImageSource Uri=../Assets/Icon_Arrow_Left_24x24.svg}" />
+                            <TextBlock VerticalAlignment="Center" Text="Move to description"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <Label Grid.Row="0" Grid.Column="2" Content="Include as description" FontSize="16" />
+                <ListBox Name="ListBoxDescriptionsStyles" Grid.Row="2" Grid.Column="2" ItemsSource="{Binding DescriptionStyles}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedDescriptionStyles, Mode=TwoWay}"/>
+            </Grid>
+            <Grid Grid.Row="3" Margin="0 16 0 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" HorizontalAlignment="left" Padding="8,4" Background="#5546FF" Foreground="#FFFF"  BorderThickness="0"  Height="auto" Width="auto" Command="{Binding ImportWordDocumentCommand}">Start import</Button>
+                <TextBox VerticalContentAlignment="Center" Grid.Column="1" IsReadOnly="True" Foreground="Red" Margin="8,0,0,0"
+Visibility="{Binding WarningsVisible, Converter={StaticResource BoolToVisConverter}, UpdateSourceTrigger=PropertyChanged}" 
+Text="{Binding ImportWarnings, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label VerticalContentAlignment="Center" Grid.Column="2" Height="30" Margin="8,0,0,0" Foreground="Red"
+Content="{Binding ErrorText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Label VerticalContentAlignment="Center" Grid.Column="3" Height="30" Margin="8,0,0,0" Width="auto" 
+   Content="{Binding InformationText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
         </Grid>
-        <Grid Grid.Row="3" Margin="10,0,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Height="30" Width="80" Command="{Binding ImportWordDocumentCommand}" >Start import</Button>
-            <Label Grid.Column="1" Height="30" Margin="10,0,0,0" Foreground="Red"
-                           Content="{Binding ErrorText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></Label>
-            <Label Grid.Column="1" Height="30" Margin="10,0,0,0" Width="200" 
-                           Content="{Binding InformationText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></Label>
-        </Grid>
-    </Grid><!-- main -->
+    </Border>
 </UserControl>
