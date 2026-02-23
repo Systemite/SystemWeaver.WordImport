@@ -55,11 +55,12 @@
       <exception cref="T:SystemWeaver.Common.SWInvalidUsernameOrPasswordException">Thrown when the specified LoginName or Password is invalid.</exception>
       <exception cref="T:System.Exception">Thrown if not able to connect for any other number of reasons.</exception>
     </member>
-    <member name="M:SystemWeaverAPI.SWConnection.Login(SystemWeaverAPI.EventSynchronization)">
+    <member name="M:SystemWeaverAPI.SWConnection.Login(SystemWeaverAPI.EventSynchronization,System.IntPtr)">
       <summary>
             Connect and log into the specified server using the supplied properties.
             </summary>
       <param name="eventSynchronization">Type of synchronization to be used when processing events.</param>
+      <param name="windowHandle">#Entra Only Mandatory# Handle for Entra to use as parent when creating login window.</param>
       <exception cref="T:SystemWeaver.Common.SWSafeException">Thrown when the ServerMachineName is not set or when the client is already connected to a server.</exception>
       <exception cref="T:SystemWeaver.Common.SWInvalidUsernameOrPasswordException">Thrown when the specified LoginName or Password is invalid.</exception>
       <exception cref="T:System.Exception">Thrown if not able to connect for any other number of reasons.</exception>
@@ -214,6 +215,14 @@
             process will be assumed to be the windows credentials, not the SystemWeaver credentials.
             This needs the network id to be set on the user. You will also need to supply the domain
             for the user.
+            </summary>
+    </member>
+    <member name="F:SystemWeaver.Common.AuthenticationMethod.EntraIdAuthentication">
+      <summary>
+            The supplied authentication will be based on Microsoft Entra ID.
+            The user will sign in using Microsoft Entra ID and get a token back.
+            This token is then validated against the SystemWeaver server.
+            This needs the network id to be set to the username used in Entra.
             </summary>
     </member>
     <member name="T:SystemWeaver.Common.ConnectionEvents">
@@ -1746,7 +1755,7 @@
     </member>
     <member name="M:SystemWeaver.Common.IswBroker.Login(System.String,System.String)">
       <summary>
-              Login to the SystemWeaver server/database. Raises exception on failed login.
+            Login to the SystemWeaver server/database. Raises exception on failed login.
             </summary>
       <param name="loginName">The user login name.</param>
       <param name="password">The user password</param>
@@ -1755,7 +1764,7 @@
     </member>
     <member name="M:SystemWeaver.Common.IswBroker.LoginWithNetworkAuthentication(System.String)">
       <summary>
-              Login to the SystemWeaver server/database using as the currently logged in windows user. 
+            Login to the SystemWeaver server/database using as the currently logged in windows user. 
             </summary>
       <param name="serverNetworkId">The network user id that the server runs as. If not supplied 
               then authentication will default to using NTML.</param>
@@ -1769,6 +1778,21 @@
               to be stored in memory or sent over the network.
             </summary>
       <returns>The user object representing the user you are logged in as</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.IswBroker.LoginWithEntraId(System.IntPtr)">
+      <summary>
+            Login to the SystemWeaver server/database using Microsoft Entra Id.
+            </summary>
+      <returns>The user object representing the user you are logged in as</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.IswBroker.TrackAction(System.String,System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.String}})">
+      <summary>
+            Sends given values to server for adding to the usage log. 
+            </summary>
+      <param name="type">
+      </param>
+      <param name="values">
+      </param>
     </member>
     <member name="M:SystemWeaver.Common.IswBroker.GetUsageData(System.String,System.DateTime,System.DateTime)">
       <summary>
@@ -1960,6 +1984,14 @@
         <para>If you supply a nil handle a nil object will be added to the result.</para>
       </remarks>
       <returns>Found objects.</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.IswBroker.PrepareDescriptions(SystemWeaver.Common.IswObjects)">
+      <summary>
+              Used to prefetch Description for given objects. Good if you know that you will be reading a lot of descriptions. 
+              For example, before generating report containing descriptions of many items.
+            </summary>
+      <param name="objects">
+      </param>
     </member>
     <member name="M:SystemWeaver.Common.IswBroker.GetType(System.Int64)">
       <summary>
@@ -3286,6 +3318,19 @@
       </param>
       <returns>true if <c>password</c> matches the user’s password.</returns>
     </member>
+    <member name="M:SystemWeaver.Common.IswUser.PasswordIsReused(System.String,System.Int32,System.Int32)">
+      <summary>
+              Checks if the specified password has been used before by this user within the specified constraints. 
+            </summary>
+      <param name="APassword">
+      </param>
+      <param name="AMaxAgeInDays">
+      </param>
+      <param name="AMinCountBeforeReuseAllowed">
+      </param>
+      <returns>
+      </returns>
+    </member>
     <member name="M:SystemWeaver.Common.IswUser.GetSystemVariable(System.String)">
       <summary>
             String value of SystemWeaver user variable.
@@ -3313,6 +3358,13 @@
             </summary>
       <param name="name">Key</param>
       <param name="value">Value</param>
+    </member>
+    <member name="M:SystemWeaver.Common.IswUser.SetSystemVariableDataAsync(System.String,System.Byte[])">
+      <summary>
+              Same as SetSystemVariableData but fire and forget and don't wait for server to ackknowledge
+            </summary>
+      <param name="name">The qualified name of the system variable.</param>
+      <param name="value">The value as a byte array.</param>
     </member>
     <member name="M:SystemWeaver.Common.IswUser.GetHistory">
       <summary>
@@ -9126,6 +9178,11 @@
             Gets the number of handles in the translation table.
             </summary>
     </member>
+    <member name="P:SystemWeaver.Common.SWObjectRefTable.Handles">
+      <summary>
+            Get Handles from table
+            </summary>
+    </member>
     <member name="P:SystemWeaver.Common.SWObjectRefTable.Item(System.Int32)">
       <summary>
             Gets the handle associated by the given id.
@@ -9195,7 +9252,7 @@
       <param name="broker">A broker object used to look up description references in the description</param>
       <returns>The description text</returns>
     </member>
-    <member name="M:SystemWeaver.Common.SWDescription.RtfToDescription(System.String)">
+    <member name="M:SystemWeaver.Common.SWDescription.RtfToDescription(System.String,SystemWeaver.Common.IswBroker)">
       <summary>
             Creates a SystemWeaver description object from rtf.
             </summary>
@@ -9344,6 +9401,46 @@
       <exception cref="T:System.ArgumentOutOfRangeException">If the text (in compressed RichView format) exceeds the maximum size.</exception>
       <returns>True if there is no visible text or images in the description</returns>
     </member>
+    <member name="M:SystemWeaver.Common.SWUtility.RvfzToRtf(System.Byte[],SystemWeaver.Common.IswBroker)">
+            *****************************************************************
+            ***                  RvfzToRtf                                ***
+            *****************************************************************
+            <summary>
+            Returns an RTF string representation of the compressed RichView data
+            </summary><param name="rvfz">Compressed RichView data</param><param name="broker">A broker in which to look up object names for description references</param><exception cref="T:System.ArgumentNullException">If rvfz is null.</exception><exception cref="T:System.ArgumentOutOfRangeException">If the RTF string exceeds the maximum size.</exception><returns>RTF string</returns></member>
+    <member name="M:SystemWeaver.Common.SWUtility.RvfzToRtfDll(System.Byte[],SystemWeaver.Common.IswBroker)">
+      <summary>
+            Returns an RTF string representation of the compressed RichView data
+            </summary>
+      <param name="rvfz">Compressed RichView data</param>
+      <param name="broker">A broker in which to look up object names for description references</param>
+      <exception cref="T:System.ArgumentNullException">If rvfz is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">If the RTF string exceeds the maximum size.</exception>
+      <returns>RTF string</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.SWUtility.RtfToRvfz(System.String,SystemWeaver.Common.IswBroker)">
+            *****************************************************************
+            ***                  RtfToRvfz                                ***
+            *****************************************************************
+            <summary>
+            Returns a compressed RVF representation of the RTF.
+            </summary><param name="rtf">RTF string</param><param name="broker">The broker for the connection</param><exception cref="T:System.ArgumentNullException">If rtf is null.</exception><exception cref="T:System.ArgumentOutOfRangeException">If the compressed RVF data exceeds the maximum size.</exception><returns>Compressed RVF data.</returns></member>
+    <member name="M:SystemWeaver.Common.SWUtility.RtfToRvfzDll(System.String)">
+      <summary>
+            Returns a compressed RVF representation of the RTF.
+            </summary>
+      <param name="rtf">RTF string</param>
+      <exception cref="T:System.ArgumentNullException">If rtf is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">If the compressed RVF data exceeds the maximum size.</exception>
+      <returns>Compressed RVF data.</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.SWUtility.RvfzToPlainText(System.Byte[],SystemWeaver.Common.IswBroker)">
+            *****************************************************************
+            ***                  RvfzToPlainText                          ***
+            *****************************************************************
+            <summary>
+            Returns plain text from compressed RichView data.
+            </summary><param name="rvfz">Compressed RichView data</param><param name="broker">A broker in which to look up object names for description references</param><exception cref="T:System.ArgumentNullException">If rvfz is null.</exception><exception cref="T:System.ArgumentOutOfRangeException">If the plain text string exceeds the maximum size.</exception><returns>Plain text</returns></member>
     <member name="M:SystemWeaver.Common.SWUtility.RvfzToPlainTextDll(System.Byte[],SystemWeaver.Common.IswBroker)">
       <summary>
             Returns plain text from compressed RichView data.
@@ -9364,16 +9461,6 @@
       <exception cref="T:System.ArgumentOutOfRangeException">If the html text string exceeds the maximum size.</exception>
       <returns>Html text</returns>
     </member>
-    <member name="M:SystemWeaver.Common.SWUtility.RvfzToRtf(System.Byte[],SystemWeaver.Common.IswBroker)">
-      <summary>
-            Returns an RTF string representation of the compressed RichView data
-            </summary>
-      <param name="rvfz">Compressed RichView data</param>
-      <param name="broker">A broker in which to look up object names for description references</param>
-      <exception cref="T:System.ArgumentNullException">If rvfz is null.</exception>
-      <exception cref="T:System.ArgumentOutOfRangeException">If the RTF string exceeds the maximum size.</exception>
-      <returns>RTF string</returns>
-    </member>
     <member name="M:SystemWeaver.Common.SWUtility.RvfzToDocX(System.Byte[],SystemWeaver.Common.IswBroker)">
       <summary>
             Returns a Word .docx string representation of the compressed RichView data
@@ -9393,15 +9480,6 @@
       <param name="fileName">Name of .docx file</param>
       <exception cref="T:System.ArgumentNullException">If rvfz is null.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">If the DocX string exceeds the maximum size.</exception>
-    </member>
-    <member name="M:SystemWeaver.Common.SWUtility.RtfToRvfz(System.String)">
-      <summary>
-            Returns a compressed RVF representation of the RTF.
-            </summary>
-      <param name="rtf">RTF string</param>
-      <exception cref="T:System.ArgumentNullException">If rtf is null.</exception>
-      <exception cref="T:System.ArgumentOutOfRangeException">If the compressed RVF data exceeds the maximum size.</exception>
-      <returns>Compressed RVF data.</returns>
     </member>
     <member name="M:SystemWeaver.Common.SWUtility.HtmlToRvfz(System.String,System.String)">
       <summary>

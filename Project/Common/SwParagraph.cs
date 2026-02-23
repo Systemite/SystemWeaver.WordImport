@@ -25,7 +25,7 @@ namespace SystemWeaver.WordImport.Common
         {
             try
             {
-                InternalClipboardCopyRtf(range);
+                InternalClipboardCopyRtf(range, currentItem.Broker);
             }
             catch (DllNotFoundException ex)
             {
@@ -52,7 +52,7 @@ namespace SystemWeaver.WordImport.Common
 
         }
 
-        private void InternalClipboardCopyRtf(Range range)
+        private void InternalClipboardCopyRtf(Range range, IswBroker broker)
         {
             Clipboard.Clear();
             range.Select();
@@ -61,7 +61,7 @@ namespace SystemWeaver.WordImport.Common
             if(clAsync.ContainsText(TextDataFormat.Rtf))
             {
                 RtfData = clAsync.GetText(TextDataFormat.Rtf);
-                ParagraphData = SWUtility.RtfToRvfz(RtfData);
+                ParagraphData = SWUtility.RtfToRvfz(RtfData, broker);
             }
         }
         public string Text { get; set; }
