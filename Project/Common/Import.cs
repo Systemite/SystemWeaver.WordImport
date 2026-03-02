@@ -36,7 +36,7 @@ namespace SystemWeaver.WordImport.Common
             {
                 if (wordItem.MainParagraph == null)
                 {
-                    topItem.Description = SWDescription.MakeDescription(SWUtility.RtfToRvfz(ConcatenateParagraphsRtf(wordItem.DescriptionParagraphs))); 
+                    topItem.Description = SWDescription.MakeDescription(SWUtility.RtfToRvfz(ConcatenateParagraphsRtf(wordItem.DescriptionParagraphs), topItem.Broker)); 
                     continue;
                 }
                 currentOutlineLevel = wordItem.MainParagraph.OutlineLevel;
@@ -102,7 +102,7 @@ namespace SystemWeaver.WordImport.Common
             {
                 try
                 {
-                    newItem.Description = SWDescription.MakeDescription(SWUtility.RtfToRvfz(ConcatenateParagraphsRtf(wordItem.DescriptionParagraphs)));
+                    newItem.Description = SWDescription.MakeDescription(SWUtility.RtfToRvfz(ConcatenateParagraphsRtf(wordItem.DescriptionParagraphs), newItem.Broker));
                 }
                 catch (Exception ex)
                 {
@@ -132,7 +132,7 @@ namespace SystemWeaver.WordImport.Common
             newItem = currentItem.HomeLibrary.CreateItem(createSID, paragraph.Text);
             try
             {
-                newItem.Description = SWDescription.MakeDescription(SWUtility.RtfToRvfz(descriptionRtf));
+                newItem.Description = SWDescription.MakeDescription(SWUtility.RtfToRvfz(descriptionRtf, newItem.Broker));
             }
             catch (Exception ex)
             {
