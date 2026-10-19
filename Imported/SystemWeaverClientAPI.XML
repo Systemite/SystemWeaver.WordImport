@@ -90,9 +90,19 @@
             <para />If the retry again value is set to true the API will try to reconnect. Otherwise the user will have to manually connect again by calling Login.
             </summary>
     </member>
+    <member name="P:SystemWeaverAPI.SWConnection.OnRetrySucceeded">
+      <summary>
+            The OnRetrySucceeded callback will be called whenever the API has reestablished the connection to the server on a retry.
+            </summary>
+    </member>
     <member name="P:SystemWeaverAPI.SWConnection.OnGiveUp">
       <summary>
             The OnGiveUp callback will be called whenever the API has lost the connection to the server for the last time and OnRetry has been called with true parameter.
+            </summary>
+    </member>
+    <member name="P:SystemWeaverAPI.SWConnection.OnChangePassword">
+      <summary>
+            The OnChangePassword callback will be called when the user logs in using SystemWeaverCredentials and needs to change their password according to password policy.
             </summary>
     </member>
     <member name="P:SystemWeaverAPI.SWConnection.Marshaler">
@@ -224,6 +234,43 @@
             This token is then validated against the SystemWeaver server.
             This needs the network id to be set to the username used in Entra.
             </summary>
+    </member>
+    <member name="F:SystemWeaver.Common.AuthenticationMethod.KeycloakAuthentication">
+      <summary>
+            The supplied authentication will be based on Keycloak.
+            The user will sign in using keycloak user and get a code back.
+            This code is then validated in the SystemWeaver server.
+            This needs the network id to be set to the username used in keycloak.
+            </summary>
+    </member>
+    <member name="M:SystemWeaver.Common.ByteArrayExtension.Insert(System.Byte[],System.Int32,System.Int64)">
+      <summary>
+            Inserts the specified value into the byte array at the specified index
+            </summary>
+    </member>
+    <member name="M:SystemWeaver.Common.ByteArrayExtension.ConvertToInt64(System.Byte[],System.Int32)">
+      <summary>
+            Converts the eight bytes starting at the specified index to an Int64 value
+            </summary>
+    </member>
+    <member name="T:SystemWeaver.Common.CallCompression">
+      <summary>
+            Compresses and decompresses byte arrays for transmission between client and server.
+            </summary>
+    </member>
+    <member name="M:SystemWeaver.Common.CallCompression.Compress(System.Byte[])">
+      <summary>
+            Compress the specified byte array.
+            </summary>
+      <param name="source">The byte array to compress</param>
+      <returns>Returns a byte array containing a compressed representation of the specified byte array</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.CallCompression.Decompress(System.Byte[])">
+      <summary>
+            Decompress the specified byte array.
+            </summary>
+      <param name="source">The byte array to decompress</param>
+      <returns>Returns a byte array containing a decompressed representation of the specified byte array</returns>
     </member>
     <member name="T:SystemWeaver.Common.ConnectionEvents">
       <summary>
@@ -1785,6 +1832,12 @@
             </summary>
       <returns>The user object representing the user you are logged in as</returns>
     </member>
+    <member name="M:SystemWeaver.Common.IswBroker.LoginWithKeycloak">
+      <summary>
+            Login to the SystemWeaver server/database using Keycloak.
+            </summary>
+      <returns>The user object representing the user you are logged in as</returns>
+    </member>
     <member name="M:SystemWeaver.Common.IswBroker.TrackAction(System.String,System.Collections.Generic.IEnumerable{System.ValueTuple{System.String,System.String}})">
       <summary>
             Sends given values to server for adding to the usage log. 
@@ -1908,7 +1961,7 @@
             stores password policy settings.</para>
         <para>For a simple string value use the Get/SetSystemVariableString methods.</para>
         <para>For store structured information, compressed XML is the preferred format, and you use the Get/SetSystemVariableData methods to access the system variable.
-            The max data-length is 131071 bytes.</para>
+            The max data-length is 196607 bytes.</para>
         <para>System variables can also be used to manage unique id counters, see <see cref="M:SystemWeaver.Common.IswBroker.IncreaseSystemVariable(System.String)" />.</para>
         <para>
         </para>
@@ -5318,7 +5371,7 @@
       <summary>
             See <see cref="M:SystemWeaver.Common.IswItem.InsertPart(System.Int32,System.String,SystemWeaver.Common.IswObj,SystemWeaver.Common.IswObj)" /></summary>
     </member>
-    <member name="M:SystemWeaver.Common.IswItem.GetParts(System.String)">
+    <member name="M:SystemWeaver.Common.IswItem.InsertVersion(SystemWeaver.Common.InsertVersionBehavior)">
       <summary>
             Returns all parts of given part-type.
             </summary>
@@ -5328,6 +5381,10 @@
             The parts returned are in no specified order.
             If no parts of given type exist, an empty list is returned. If there exists no part with given sid, an empty list is silently returned.
             </remarks>
+      <summary>
+            Do not use. This is experimental functionality and should not be used.
+            It will change data, with no way of going back.
+            </summary>
     </member>
     <member name="M:SystemWeaver.Common.IswItem.GetParts(SystemWeaver.Common.IswPartType)">
       <summary>
@@ -7810,11 +7867,24 @@
             Callback method for OnRetry
             </summary>
       <param name="retryAgain">Set to true if the API should try to reconnect again. Default is false.</param>
-      <param name="nrRetries">The api informs the client on which retry number we are.</param>
+      <param name="nrRetries">The api informs the client on which retry number we are. Will stop retrying if retryAgain &gt;= 5. Can be manually reset for more retries.</param>
     </member>
     <member name="T:SystemWeaver.Common.GiveUpMethod">
       <summary>
             Callback method for OnGiveUp
+            </summary>
+    </member>
+    <member name="T:SystemWeaver.Common.ChangePasswordMethod">
+      <summary>
+            Callback method for OnChangePassword
+            </summary>
+      <param name="currentUser">The currently logged in user that needs to change their password</param>
+      <param name="informationText">Describes the reason for password change</param>
+      <returns>True if the user has changed their password and gets to login, False if they should be logged out</returns>
+    </member>
+    <member name="T:SystemWeaver.Common.RetrySucceededMethod">
+      <summary>
+            Callback method for OnRetrySucceeded
             </summary>
     </member>
     <member name="T:SystemWeaver.Common.TswObjectList">
@@ -9127,6 +9197,23 @@
             Implements <see cref="P:SystemWeaver.Common.IswWorkflowStatuses.Item(System.Int32)" />.
             </summary>
     </member>
+    <member name="T:SystemWeaver.Common.SWChunkDataFormat">
+      <summary>
+            What the data block next to the object ref table contains.
+            </summary>
+    </member>
+    <member name="F:SystemWeaver.Common.SWChunkDataFormat.Rvfz">
+      <summary>Compressed RVF.</summary>
+    </member>
+    <member name="F:SystemWeaver.Common.SWChunkDataFormat.Xmlz8">
+      <summary>Compressed XML, UTF-8.</summary>
+    </member>
+    <member name="F:SystemWeaver.Common.SWChunkDataFormat.Xmlz16">
+      <summary>Compressed XML, UTF-16.</summary>
+    </member>
+    <member name="F:SystemWeaver.Common.SWChunkDataFormat.Unknown">
+      <summary>Anything else, kept as is.</summary>
+    </member>
     <member name="T:SystemWeaver.Common.SWObjectRefTable">
       <summary>
             This is the class responsible for wrapping the rvf in the descriptions. It adds a translation table at the beginning used 
@@ -9158,6 +9245,35 @@
             </summary>
       <param name="AString">The input</param>
       <param name="data">The wrapped data</param>
+    </member>
+    <member name="M:SystemWeaver.Common.SWObjectRefTable.SaveToChunkBasedData(System.Byte[])">
+      <summary>
+            Gets the byte array consisting of the managed translation table together with the data it is supposed to wrap,
+            using the chunk-based format: a sequence of tagged, length-prefixed blocks instead of one flat
+            [count][handles...][data] buffer:
+              bytes[ ORT_DATATYPE_TABLE, bytes[ handle count, handles... ] ]
+              bytes[ ORT_DATATYPE_RVF,   data ]
+            </summary>
+      <param name="data">The data to wrap.</param>
+      <returns>The chunk-based byte array wrapping the translation table and the data.</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.SWObjectRefTable.LoadFromChunkBasedData(System.Byte[],System.Byte[]@)">
+      <summary>
+            Loads a translation table saved with <see cref="M:SystemWeaver.Common.SWObjectRefTable.SaveToChunkBasedData(System.Byte[])" />, and returns the wrapped data.
+            </summary>
+      <param name="AData">The input</param>
+      <param name="data">The wrapped data</param>
+    </member>
+    <member name="M:SystemWeaver.Common.SWObjectRefTable.SaveToChunkBasedDataWithFormat(System.Byte[],SystemWeaver.Common.SWChunkDataFormat)">
+      <summary>
+            Same layout as <see cref="M:SystemWeaver.Common.SWObjectRefTable.SaveToChunkBasedData(System.Byte[])" />, but the data block is tagged with the given format instead of always RVF.
+            </summary>
+    </member>
+    <member name="M:SystemWeaver.Common.SWObjectRefTable.LoadFromChunkBasedDataWithFormat(System.Byte[],System.Byte[]@,SystemWeaver.Common.SWChunkDataFormat@)">
+      <summary>
+            Loads a translation table and its data block, and reports which format the data block had
+            (Rvfz if there is no data block).
+            </summary>
     </member>
     <member name="M:SystemWeaver.Common.SWObjectRefTable.NewRefId(System.Int64)">
       <summary>
@@ -9214,19 +9330,15 @@
       <param name="AZText">The description text as compressed rvf.</param>
       <returns>The description object</returns>
     </member>
-    <member name="M:SystemWeaver.Common.SWDescription.PlainTextToDescription(System.String)">
+    <member name="M:SystemWeaver.Common.SWDescription.DataToDescription(System.Byte[],SystemWeaver.Common.SWChunkDataFormat)">
       <summary>
-            Creates a SystemWeaver description object from plain text.
+            Creates a description for data that is not RVF (merge info, ...): the data block is tagged with its format.
             </summary>
-      <param name="plainText">The description text</param>
-      <returns>The description object</returns>
     </member>
-    <member name="M:SystemWeaver.Common.SWDescription.IsEmpty(SystemWeaver.Common.IswDescription)">
+    <member name="M:SystemWeaver.Common.SWDescription.DescriptionToData(SystemWeaver.Common.IswDescription,SystemWeaver.Common.SWChunkDataFormat@)">
       <summary>
-            Checks if the given description is empty.
+            Reads the data block of a description together with its format.
             </summary>
-      <param name="description">The description object</param>
-      <returns>True if the description is empty</returns>
     </member>
     <member name="M:SystemWeaver.Common.SWDescription.DescriptionToPlainText(SystemWeaver.Common.IswDescription,SystemWeaver.Common.IswBroker)">
       <summary>
@@ -9257,6 +9369,7 @@
             Creates a SystemWeaver description object from rtf.
             </summary>
       <param name="rtf">The description text</param>
+      <param name="broker">A broker object used to look up description references in the description</param>
       <returns>The description object</returns>
     </member>
     <member name="M:SystemWeaver.Common.SWDescription.DescriptionToDocX(SystemWeaver.Common.IswDescription,SystemWeaver.Common.IswBroker)">
@@ -9332,6 +9445,16 @@
               General utility class containing assorted functions.
             </summary>
     </member>
+    <member name="T:SystemWeaver.Common.SWUtility.RvfzAndBigImages">
+            *****************************************************************
+            ***                HtmlToRvfzUsingBigImages                   ***
+            *****************************************************************
+        </member>
+    <member name="M:SystemWeaver.Common.SWUtility.RvfzAndBigImages.#ctor(System.Byte[],SystemWeaver.Common.SWUtility.RBigImageData[])">
+            *****************************************************************
+            ***                HtmlToRvfzUsingBigImages                   ***
+            *****************************************************************
+        </member>
     <member name="F:SystemWeaver.Common.SWUtility.NO_DATE">
       <summary>
               Returns the date value used to represent "nil" date in the API, i.e. the absence of a date value.
@@ -9383,6 +9506,30 @@
             This is the standard used in SystemWeaver.
             </summary>
     </member>
+    <member name="M:SystemWeaver.Common.SWUtility.HtmlToRvfz(System.String,System.String)">
+      <summary>
+        <para>Convert HTML to (compressed) RVF by using the bundled <c>RVFUtility.dll</c></para>
+        <para>See also <see cref="M:SystemWeaver.Common.SWUtility.HtmlToRvfz(System.String,System.String,SystemWeaver.Common.IswBroker)" /></para>
+      </summary>
+      <param name="fileName">The file name and path to where the html file is located.</param>
+      <param name="defaultFontName">The default font for html text without font information, default is "Times New Roman"</param>
+      <exception cref="T:System.ArgumentNullException">If fileName is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">If the compressed RVF data exceeds the maximum size.</exception>
+      <returns>Compressed RVF data.</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.SWUtility.HtmlToRvfz(System.String,System.String,SystemWeaver.Common.IswBroker)">
+      <summary>
+        <para>Convert HTML to (compressed) RVF by calling the server.</para>
+        <para>Exists to provide RVF compatibility to clients that can't load <c>RVFUtility.dll</c>, e.g. clients on Linux.</para>
+        <para>See also <see cref="M:SystemWeaver.Common.SWUtility.HtmlToRvfz(System.String,System.String)" /></para>
+      </summary>
+      <param name="fileName">The file name and path to where the html file is located.</param>
+      <param name="defaultFontName">The default font for html text without font information, default is "Times New Roman"</param>
+      <param name="broker">The broker for the connection to the server</param>
+      <exception cref="T:System.ArgumentNullException">If fileName is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">If the compressed RVF data exceeds the maximum size.</exception>
+      <returns>Compressed RVF data.</returns>
+    </member>
     <member name="M:SystemWeaver.Common.SWUtility.PlainTextToRvfz(System.String)">
       <summary>
             Returns text in compressed RichView format (used by rvf attributes).
@@ -9391,15 +9538,6 @@
       <exception cref="T:System.ArgumentNullException">If text is null.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">If the text (in compressed RichView format) exceeds the maximum size.</exception>
       <returns>Text in compressed RichView format.</returns>
-    </member>
-    <member name="M:SystemWeaver.Common.SWUtility.RvfzIsEmpty(System.Byte[])">
-      <summary>
-            Checks if the description is empty. Visible rvf item count is empty.
-            </summary>
-      <param name="text">Plain text</param>
-      <exception cref="T:System.ArgumentNullException">If text is null.</exception>
-      <exception cref="T:System.ArgumentOutOfRangeException">If the text (in compressed RichView format) exceeds the maximum size.</exception>
-      <returns>True if there is no visible text or images in the description</returns>
     </member>
     <member name="M:SystemWeaver.Common.SWUtility.RvfzToRtf(System.Byte[],SystemWeaver.Common.IswBroker)">
             *****************************************************************
@@ -9418,12 +9556,20 @@
       <exception cref="T:System.ArgumentOutOfRangeException">If the RTF string exceeds the maximum size.</exception>
       <returns>RTF string</returns>
     </member>
+    <member name="M:SystemWeaver.Common.SWUtility.HtmlToRvfzUsingBigImages(System.String,System.String,System.Int32,System.Int32)">
+      <summary>
+                Convert HTML to (compressed) RVF
+            </summary>
+      <param name="fileName">The html file</param>
+      <param name="defaultFontName">Font to use if not specified in html</param>
+      <returns>Compressed RVF data.</returns>
+    </member>
     <member name="M:SystemWeaver.Common.SWUtility.RtfToRvfz(System.String,SystemWeaver.Common.IswBroker)">
             *****************************************************************
             ***                  RtfToRvfz                                ***
             *****************************************************************
             <summary>
-            Returns a compressed RVF representation of the RTF.
+                Convert HTML to (compressed) RVF by calling the server.
             </summary><param name="rtf">RTF string</param><param name="broker">The broker for the connection</param><exception cref="T:System.ArgumentNullException">If rtf is null.</exception><exception cref="T:System.ArgumentOutOfRangeException">If the compressed RVF data exceeds the maximum size.</exception><returns>Compressed RVF data.</returns></member>
     <member name="M:SystemWeaver.Common.SWUtility.RtfToRvfzDll(System.String)">
       <summary>
@@ -9461,6 +9607,16 @@
       <exception cref="T:System.ArgumentOutOfRangeException">If the html text string exceeds the maximum size.</exception>
       <returns>Html text</returns>
     </member>
+    <member name="M:SystemWeaver.Common.SWUtility.RvfzToHtmlText(System.Byte[],SystemWeaver.Common.IswBroker)">
+      <summary>
+            Returns html text from compressed RichView data.
+            </summary>
+      <param name="rvfz">Compressed RichView data</param>
+      <param name="broker">A broker in which to look up object names for description references</param>
+      <exception cref="T:System.ArgumentNullException">If rvfz is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">If the html text string exceeds the maximum size.</exception>
+      <returns>Html text</returns>
+    </member>
     <member name="M:SystemWeaver.Common.SWUtility.RvfzToDocX(System.Byte[],SystemWeaver.Common.IswBroker)">
       <summary>
             Returns a Word .docx string representation of the compressed RichView data
@@ -9481,15 +9637,28 @@
       <exception cref="T:System.ArgumentNullException">If rvfz is null.</exception>
       <exception cref="T:System.ArgumentOutOfRangeException">If the DocX string exceeds the maximum size.</exception>
     </member>
-    <member name="M:SystemWeaver.Common.SWUtility.HtmlToRvfz(System.String,System.String)">
+    <member name="M:SystemWeaver.Common.SWUtility.RvfzChunkToDocXChunk(System.Byte[])">
       <summary>
-            Returns a compressed RVF representation of the Html.
+            Converts a raw (chunk-based) compressed RichView payload directly to .docx bytes.
+            Unlike <see cref="M:SystemWeaver.Common.SWUtility.RvfzToDocX(System.Byte[],SystemWeaver.Common.IswBroker)" /> this does no TObjectRefTable/description
+            wrapping and does no object-reference name resolution (the chunk-based rvfz payload is
+            expected to already have hyperlinks flattened to plain URL-tagged text), so no broker is needed.
             </summary>
-      <param name="fileName">The file name and path to where the html file is located.</param>
-      <param name="defaultFontName">The default font for html text without font information, default is "Times New Roman"</param>
-      <exception cref="T:System.ArgumentNullException">If fileName is null.</exception>
-      <exception cref="T:System.ArgumentOutOfRangeException">If the compressed RVF data exceeds the maximum size.</exception>
-      <returns>Compressed RVF data.</returns>
+      <param name="rvfzData">Compressed RichView data (already unwrapped from any envelope format).</param>
+      <exception cref="T:System.ArgumentNullException">If rvfzData is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">If the resulting docx data exceeds the maximum buffer size.</exception>
+      <returns>DocX data.</returns>
+    </member>
+    <member name="M:SystemWeaver.Common.SWUtility.DocXChunkToRvfzChunk(System.Byte[])">
+      <summary>
+            Converts raw .docx bytes directly to a (chunk-based) compressed RichView payload.
+            This is the reverse of <see cref="M:SystemWeaver.Common.SWUtility.RvfzChunkToDocXChunk(System.Byte[])" />: no TObjectRefTable/description
+            wrapping and no object-reference name resolution, so no broker is needed.
+            </summary>
+      <param name="docXData">DocX data.</param>
+      <exception cref="T:System.ArgumentNullException">If docXData is null.</exception>
+      <exception cref="T:System.ArgumentOutOfRangeException">If the resulting rvfz data exceeds the maximum buffer size.</exception>
+      <returns>Compressed RichView data.</returns>
     </member>
     <member name="M:SystemWeaver.Common.SWUtility.GetAllReferencedItems(SystemWeaver.Common.IswItem,System.Boolean,System.Boolean,System.Boolean,System.Collections.Generic.List{System.String})">
       <summary>
@@ -9533,6 +9702,23 @@
       </param>
       <returns>
       </returns>
+    </member>
+    <member name="T:SystemWeaver.Common.Advanced.IswUnsafeCacheControl">
+      <summary>
+            Advanced, opt-in control over the client cache.
+            <para>
+            These operations break invariants that normal client code relies on (object identity of
+            cached items, references already held by user code, etc.).
+            Only call them if you understand and accept those consequences.
+            </para></summary>
+    </member>
+    <member name="M:SystemWeaver.Common.Advanced.IswUnsafeCacheControl.ClearCache">
+      <summary>
+            Clears all cached content objects (items, parts, nodes, etc.) while preserving login
+            metadata (types, libraries, users, etc.). Any <see cref="T:SystemWeaver.Common.IswItem" /> or similar
+            references held by caller code will be detached from the cache; re-fetching by handle
+            returns fresh instances.
+            </summary>
     </member>
     <member name="T:SystemWeaver.Common.Messages.Request">
       <summary>
